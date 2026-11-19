@@ -1,4 +1,4 @@
-name: Deploy website to GitHub Pages
+name: Deploy BITE'S Strawberry website and admin
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: bites-strawberry-website-ready
+        working-directory: bites-strawberry-admin-cms
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,15 +28,19 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: bites-strawberry-website-ready/package-lock.json
+          cache-dependency-path: bites-strawberry-admin-cms/package-lock.json
       - name: Install dependencies
         run: npm ci
-      - name: Build
+      - name: TypeScript check
+        run: npm run lint
+      - name: Build website and admin
         run: npm run build
+      - name: Support direct /admin URL on GitHub Pages
+        run: cp dist/index.html dist/404.html
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: bites-strawberry-website-ready/dist
+          path: bites-strawberry-admin-cms/dist
 
   deploy:
     environment:
